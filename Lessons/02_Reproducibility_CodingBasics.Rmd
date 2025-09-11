@@ -1,6 +1,6 @@
 title: "2: Reproducibility and Coding Basics"
 subtitle: "Environmental Data Analytics"
-author: "John Fay and Luana Lima | Developed by Kateri Salk"
+author: "Isabelle Kuehn | Developed by Kateri Salk"
 date: "Fall 2025"
 output: pdf_document
 ---
@@ -12,6 +12,8 @@ output: pdf_document
 3.  Call and create functions in R
 
 ## Reproducible Data Analysis
+
+Reproducibility allows others to analyze your data and interperet and work with the data you've collected. This is a highly collaborative method for improvement, as it allows creative teamwork between individuals to develop solutions for problems surrounding dataset. Reproducible Data Analysis also allows low-attention issues to generate publicity through sharing datasets involved in the issue at hand.
 
 ### Fundamentals of reproducibility
 
@@ -145,11 +147,13 @@ Within your R code, it is often useful to include notes about your workflow. So 
 R functions are the major tool used in R. Functions can do virtually unlimited things within the R universe, but each function requires specific inputs that are provided under specific syntax. We will start with a simple function that is built into R, `seq`
 
 ```{r}
-seq(1, 10)
+seq(1,10)
+# this results in [1] 1 2 3 4 5 6 7 8 9 10
 ten_sequence <- seq(1, 10)
 ten_sequence
 
 seq(1, 10, 2) # from, to, by
+# this means sequence will start at 1, advances by +2
 ```
 
 The basic form of a function is `functionname()`, and the packages we will use in this class will use these basic forms. However, there may be situations when you will want to create your own function. Below is a description of how to write functions through the metaphor of creating a recipe (credit: @IsabellaGhement on Twitter).
