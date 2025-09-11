@@ -1,6 +1,6 @@
 ---
 title: "Assignment 2: Coding Basics"
-author: "Student Name"
+author: "Isabelle Kuehn"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -32,31 +32,65 @@ This exercise accompanies the lessons/labs in Environmental Data Analytics on co
 
 ```{r basics 1}
 #1. 
-
+seq_numbers <- seq(1,55,5)
+seq_numbers
 #2. 
+mean_data <- mean(seq_numbers)
+mean_data
+median_data <- median(seq_numbers)
+median_data
 
 #3. 
-
+determine_stats <- function(mean_data, median_data) {
+  if(mean_data > median_data) {
+    return("The mean is greater than the median")
+  }
+  if(median_data > mean_data) {
+    return("The median is greater than the mean")
+  }
+  if(mean_data == median_data) {
+    return("The median is equal to the mean")
+  }
+}
+determine_stats
 ```
 
 ## Basics, Part 2
 
 5.  Create three vectors, each with four components, consisting of (a) student names, (b) test scores, and (c) whether they are on scholarship or not (TRUE or FALSE).
 
+``` {r}
+vector_a <- c("Chester", "Isabelle", "Alister", "Elliot")
+vector_b <- c(73, 82, 98, 89)
+vector_c <- c(FALSE, FALSE, TRUE, TRUE)
+
+```
+
 6.  Label each vector with a comment on what type of vector it is.
 
+```{r}
+v_names <- vector_a     #character vector for student names
+v_scores <- vector_b   #number vector for test scores
+v_schol <- vector_c    #logical vector for scholarship
+```
+
 7.  Combine each of the vectors into a data frame. Assign the data frame an informative name.
+
+```{r}
+student_info <- data.frame(v_names, v_scores, v_schol)
+```
 
 8.  Label the columns of your data frame with informative titles.
 
 ```{r basics 2}
-
+names(student_info) <- c("Student Names", "Test Scores", "Scholorship T/F")
+print(student_info)
 
 ```
 
 9.  QUESTION: How is this data frame different from a matrix?
 
-> Answer:
+> Answer: This data frame is different from a matrix because it is used to store different types of data. 
 
 10. Create a function with one input. In this function, use `if`...`else` to evaluate the value of the input: if it is greater than 50, print the word "Pass"; otherwise print the word "Fail". 
 

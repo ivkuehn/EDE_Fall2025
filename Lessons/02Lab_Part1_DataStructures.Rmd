@@ -3,6 +3,8 @@ title: "Lab 2 - Data Structures in R"
 subtitle: "Environmental Data Analytics"
 author: "John Fay & Luana Lima"
 date: "Fall 2025"
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## Objective
@@ -39,10 +41,10 @@ vector1 <- c(1,2,5.3,6,-2,4) # Vector type: Numeric
 vector1
 class(vector1)
 
-vector2 <- c("one","two","three") # Vector type: 
+vector2 <- c("one","two","three") # Vector type: Character 
 vector2
 
-vector3 <- c(TRUE,TRUE,TRUE,FALSE,TRUE,FALSE) # Vector type:
+vector3 <- c(TRUE,TRUE,TRUE,FALSE,TRUE,FALSE) # Vector type: Logical/Boolean
 vector3
 ```
 
@@ -53,25 +55,25 @@ Add comments below to indicate what each operation does.(First answer is provide
 # Returns the 3rd item in the vector
 vector1[3]
 
-#
+# Returns the maximum item in the vector
 max(vector1)
 
-#Create another vector of the values 10 thru 15
+# Creates another vector of the values 10 thru 15
 vector4 <- c(10:15)
 
-#
+# Creates another vector that includes the values of vectors 1 and 4
 c(vector1, vector4)
 
-#
+# Multiplies each component of vector 1 by each component of vector 4
 vector1 * vector4
 
-#
+# Multiplies each component of vector 1 by 10
 vector1 * 10
 
-#
+# Converts all strings to uppercase
 toupper(vector2) 
 
-#
+# Negates the logical value -> true becomes false, vise versa
 !vector3
 
 ```
@@ -83,16 +85,17 @@ Find a 5-day forecast of temperatures (Fahrenheit) for Durham, North Carolina. C
 ```{r Vector Exercise}
 
 #Assign to the variable 'temps_F' a vector of high temperatures in F
-
+temps_F <- c(81, 81, 83, 83, 79)
 
 #What is the average of these temperatures 
-
+temps_avg <- mean(temps_F)
 
 #Compute the difference between each temperature and the average calculated above
-
+temps_std_dev <- temps_F - temps_avg
 
 #Subtract 32 and multiply by 5/9ths to create a vector in Celsius
-
+temps_C <- (temps_F - 32)*(5/9)
+print(temps_C)
 
 ```
 
@@ -103,11 +106,11 @@ Complete the comments below:
 # Matrices ----
 matrix1 <- matrix(1:20, nrow = 5,ncol = 4) # 
 matrix1
-#matrix1 has __ rows and __ columns
+#matrix1 has 5 rows and 4 columns
 
 matrix2 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE) #
 matrix2
-#matrix2 has __ rows and __ columns
+#matrix2 has 5 rows and 4 columns
 
 matrix3 <- matrix(
   data = 1:20, 
@@ -126,17 +129,17 @@ matrix3 <- matrix(
 Add comments in the code chunk below to indicate type of vectors created and what each operation does.
 ```{r Matrix Operations}
 
-matrix1[4, 1] #
+matrix1[4, 1] # Returns the value in row 4, col 1
 
-matrix1[4,  ] #
+matrix1[4,  ] # Returns the values of row 4
 
-matrix1[ , 3] #
+matrix1[ , 3] # Returns the values of col 3
 
-matrix1[c(12, 14)] #
+matrix1[c(12, 14)] # Returns a vector of values 12 and 14
 
-matrix1[c(12:14)] #
+matrix1[c(12:14)] # Returns a vector of values 12 through 14
 
-matrix1[2:4, 1:3] #
+matrix1[2:4, 1:3] # Returns a matrix with values from rows 2 through 4 and columns 1 through 3
 
 #Create a vector of 6 values
 values = c(1, 26, 24, 68, 3, 44)
@@ -153,17 +156,17 @@ matrix4 <- matrix(
   dimnames = list(
     rnames, 
     cnames)
-  ) # 
+  ) # defines matrix4 as one with values from the value vector, line 145, organized in 2 rows and 3 columns with row labels listed as rnames from the character vector, and col labels listed as cnames from the character vector.
 
-matrix4 #
+matrix4 # prints matrix4
 
-matrix4['R2','C1']
+matrix4['R2','C1'] #returning value in row R2 and col C1
 ```
 
 ### Exercise 1b: Matrices
 Compute the mean of column "C2" in matrix4. (Should be 14.5)
 ```{r Matrix Exercise}
-
+mean(matrix4[, 'C2'])
 ```
 
 
@@ -186,22 +189,22 @@ list1 <- list(
 ```{r List Operations}
 # List Operations
 
-#
+# prints entire list1
 list1
 
-#
+# prints only the age component of the list
 list1$age
 
-#
+# prints all names in list 1
 names(list1)
 
-#
+# prints 1st through 2nd components of the list
 list1[1:2]
 
-#
+# redefines list name component to Janelle
 list1$name = "Janelle"
 
-#
+# redfines the 4th component of the list, which is age, to 44
 list1[[4]] = 44
 ```
 
@@ -210,9 +213,9 @@ list1[[4]] = 44
 ```{r Creating data frames}
 # Data Frames ----
 #Create three vectors of equal length
-d <- c(1, 2, 3, 4) # What type of vector?
-e <- c("red", "white", "red", NA) # What type of vector?
-f <- c(TRUE, TRUE, TRUE, FALSE) # What type of vector?
+d <- c(1, 2, 3, 4) # What type of vector? Numeric
+e <- c("red", "white", "red", NA) # What type of vector? Character
+f <- c(TRUE, TRUE, TRUE, FALSE) # What type of vector? Boolean
 
 #Combine the vectors into a dataframe
 dataframe1 <- data.frame(d,e,f) 
