@@ -111,7 +111,7 @@ compare <- function(x) {
     return("Fail")
   }
 }
-compare_ages(x)
+compare(x)
 
 #11. Create a function using ifelse()
 compare_2 <- function(x) {
