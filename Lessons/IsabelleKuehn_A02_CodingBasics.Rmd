@@ -52,7 +52,7 @@ determine_stats <- function(mean_data, median_data) {
     return("The median is equal to the mean")
   }
 }
-determine_stats
+determine_stats(mean_data, median_data)
 ```
 
 ## Basics, Part 2
