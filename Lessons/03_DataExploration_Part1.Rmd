@@ -76,7 +76,7 @@ library(tidyverse)
 
 Question: What happens in the console when you load a package?
 
-> Answer: 
+> Answer: In some cases there is no output in the console, for packages like tidyverse that contain other packages, the other packages are shown as attached, and package conflicts can also appear in the output.
 
 ---
 
@@ -120,11 +120,14 @@ Commons functions to import datasets and store as data frames are *read.table()*
 -   *dec =* : define *dec="."* or *dec=","* depending on how it's defined on your set. The default is ".".
 
 ```{r Importing data}
-# Absolute file path (not recommended)
+
+# NOTE: Absolute file path (not recommended)
+
 #read.csv(
 #  file="/home/guest/EDE_Fall2024/Data/Raw/USGS_Site02085000_Flow_Raw.csv",
 #  stringsAsFactors = TRUE)
 
+#INSTEAD:
 # Relative file path (friendly for users regardless of machine)
 USGS.flow.data <- read.csv(
   file = here("./Data/Raw/USGS_Site02085000_Flow_Raw.csv"),
@@ -136,6 +139,10 @@ read.csv(here("./Data/Raw/USGS_Site02085000_Flow_Raw.csv"),stringsAsFactors = TR
 ```
 
 >Tip: Use autocomplete in the console instead of typing in the path...
+
+```{r}
+# Can use read.csv(home('')) and in between the quotations use tab to autocomplete the path
+```
 
 ### Putting it all together
 Summarizing the above, your scripts should typically begin with the following three elements: loading packages, confirming workspace locations, and importing data using relative paths. Write a code chunk below that consolidates all these into a single chunk.
@@ -160,27 +167,21 @@ Prior to analyzing your dataset, take a moment to understand your data. Where di
 
 Take a moment to read through the README file associated with the USGS dataset on discharge at the Eno River. Where can you find this file? How does the placement and information found in this file relate to the best practices for reproducible data analysis?
 
-> ANSWER: 
+> ANSWER: You can find this file in the Metadata folder within the Data folder of the cloned repository. The placement and information in the file relates to best practices for reproducible data analysis because not only does it share what information the data has, but also the specifications of how the data is structured, where the data was found, and when the data was collected. Providing the user with the greatest understanding of how the data was stored and organized, along with the source of data being used is the best way to ensure accurate reproducibility.
 
 ### Examine properties of your dataset
 Next, have a look at your dataset. Browse your data in RStudio's viewer. Have a look at the structure of your data. Consider renaming columns. 
 
 ```{r Exploring data}
-View(USGS.flow.data)
+#View(USGS.flow.data) # NOTE: need to comment out View command when knitting
 # Alternate option: click on data frame in Environment tab
 
 class(USGS.flow.data)
-colnames(USGS.flow.data)
+colnames(USGS.flow.data) # could also just use names(USGS.flow.data) and it would do the same
 
 # Rename columns
-colnames(USGS.flow.data) <- c("agency_cd", "site_no", "datetime", 
-                              "discharge.max", "discharge.max.approval", 
-                              "discharge.min", "discharge.min.approval", 
-                              "discharge.mean", "discharge.mean.approval", 
-                              "gage.height.max", "gage.height.max.approval", 
-                              "gage.height.min", "gage.height.min.approval", 
-                              "gage.height.mean", "gage.height.mean.approval")
-str(USGS.flow.data)
+colnames(USGS.flow.data) <- c("agency_cd", "site_no", "datetime",  "discharge.max", "discharge.max.approval", "discharge.min", "discharge.min.approval", "discharge.mean", "discharge.mean.approval", "gage.height.max", "gage.height.max.approval", "gage.height.min", "gage.height.min.approval", "gage.height.mean", "gage.height.mean.approval")
+str(USGS.flow.data) # glimpse() should do the same thing with slightly different formatting
 dim(USGS.flow.data)
 length(USGS.flow.data)
 
@@ -189,7 +190,7 @@ head(USGS.flow.data, 10)
 tail(USGS.flow.data, 5)
 USGS.flow.data[30000:30005, c(3, 8, 14)]
 
-class(USGS.flow.data$datetime)
+class(USGS.flow.data$datetime) # want this to actually be a date/time object
 class(USGS.flow.data$discharge.mean)
 class(USGS.flow.data$gage.height.mean)
 
@@ -198,19 +199,19 @@ summary(USGS.flow.data)  #could point to column only with $
 ```
 
 What happened to blank cells in the spreadsheet when they were imported into R?
-> Answer: 
+> Answer: From what I see, blank cells are still left blank, or they are filled with 'NA'.
 
 ### Identify and address issues: Missing Data
 
 Notice in our dataset that our discharge and gage height observations have many NAs, meaning no measurement was recorded for a specific day. In some cases, it might be in our best interest to remove NAs from a dataset. Removing NAs or not will depend on your research question.
 
 ```{r Finding NAs}
-summary(USGS.flow.data$discharge.mean)
+summary(USGS.flow.data$discharge.mean) # provides summary stats for specific columns
 summary(USGS.flow.data$gage.height.mean)
 ```
 Question: What types of research questions might make it favorable to remove NAs from a dataset, and what types of research questions might make it favorable to retain NAs in the dataset?
 
-> Answer: 
+> Answer: In the case of calculating summary stats for an entire data set, too many NAs can cause errors, so removing NAs would be favorable. (Like in the case of calculating the mean for this entire data set, the presence of NAs makes the return mean for the dataset NA). In other cases where NAs may be part of the statistic, or less present and therefore more valuable, retaining NAs would be favorable as it's contributing to the statistic. Also, omitting rows that contain an NA entry may end up deleting other present data in that row that cause other statistics to change (ex. many of the gauge height entries had NA values, but valid values for discharge, so deleting the rows of NAs gets rid of discharge values that skew stats later on.)
 
 ```{r Removing NAs}
 USGS.flow.data.complete <- na.omit(USGS.flow.data)
@@ -248,6 +249,7 @@ Alternatively, we can tell R to import it as a factor when we read the data in
 USGS.flow.data2  <- read.csv(
   file = here("./Data/Raw/USGS_Site02085000_Flow_Raw.csv"),
   stringsAsFactors = TRUE) 
+colClasses = c('site_no'='factor')
 ```
 
 
@@ -272,16 +274,16 @@ In some cases when dates are provided as integers, you may need to provide an or
 help(as.Date)
 
 # Adjust date formatting [to be done in lab session]
-# Write code for three differtent date formats.
+# Write code for three different date formats.
 # An example is provided to get you started.
 # (code must be uncommented)
-today <- Sys.Date()
+clatoday <- Sys.Date()
 format(today, format = "%B")
+#NOTE: formatting the above line using %b will return Sept instead of September
 #format(today, format = "")
 #format(today, format = "")
 #format(today, format = "")
 
-USGS.flow.data$datetime <- as.Date(USGS.flow.data$datetime, format = "%m/%d/%y") 
 ```
 
 Note that for every date prior to 1969, R has assigned the date in the 2000s rather than the 1900s. This can be fixed with an `ifelse` statement inside a function. Run through the code below and write what is happening in the comment above each line.
@@ -316,7 +318,7 @@ write.csv(
   USGS.flow.data, 
   file = here("./Data/Processed/USGS_Site02085000_Flow_Processed.csv"), 
   row.names=FALSE)
-
+# the ./ at the start of the here function defines where to start
 ```
 
 ---

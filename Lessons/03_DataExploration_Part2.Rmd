@@ -3,6 +3,8 @@ title: "3: Data Exploration"
 author: "Environmental Data Analytics | John Fay & Luana Lima"
 date: "Fall 2025"
 output: pdf_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## Lesson Objectives
@@ -25,23 +27,31 @@ Why is data exploration our first step in analyzing a dataset? What information 
 ```{r, Setup-Import-Explore, message = FALSE}
 ## -Set up-
 # 1. Load packages (tidyverse, here)
-
+library(tidyverse)
+library(here)
 # 2. Check the working directory
-
+getwd()
+here()
 # 3. Import datasets
-
+USGS.flow.data <- read.csv(
+  file = here('Data/Processed/USGS_Site02085000_Flow_Processed.csv'), stringsAsFactors = TRUE, 
+  colClasses = c('site_no'='factor')
+)
 ## -Initial Exploration-
 
 #View(USGS.flow.data)
 # Alternate option: click on data frame in Environment tab
 
 #View column names and the structure of the dataset
+colnames(USGS.flow.data)
+str(USGS.flow.data)
 
 # Check our date column: is it a date object?
+class(USGS.flow.data$datetime)
 
 # Change it to a date object and confirm
-
-
+USGS.flow.data$datetime <- as.Date(USGS.flow.data$datetime, format='%Y-%m-%d')
+class(USGS.flow.data$datetime)
 ```
 
 ---
@@ -58,30 +68,32 @@ Visualize count data for categorical variables.
 ```{r, fig.height = 3, fig.width = 4}
 ggplot(data = USGS.flow.data, aes(x = discharge.mean.approval)) +
   geom_bar()
+
+#aes refers to aesthetics
 ```
 
 ### Histogram (function: geom_histogram)
 Visualize distributions of values for continuous numerical variables. What is happening in each line of code? Insert a comment above each line.
 
 ```{r, fig.height = 3, fig.width = 4}
-# 
+# creating histogram
 ggplot(USGS.flow.data) +
   geom_histogram(aes(x = discharge.mean))
 
-# 
+# creating histogram that sorts data into 10 bins
 ggplot(USGS.flow.data) +
   geom_histogram(aes(x = discharge.mean), binwidth = 10)
 
-# 
+# creating histogram that sorts data into 20 bins
 ggplot(USGS.flow.data) +
   geom_histogram(aes(x = discharge.mean), bins = 20)
 
-# 
+# sets histogram with 10 bins and an x-axis range from 0-500
 ggplot(USGS.flow.data, aes(x = discharge.mean)) +
   geom_histogram(binwidth = 10) + 
   scale_x_continuous(limits = c(0, 500))
   
-# 
+# creating histogram with the x-axis set to avg gage height
 ggplot(USGS.flow.data) +
   geom_histogram(aes(x = gage.height.mean))
 
@@ -92,12 +104,14 @@ ggplot(USGS.flow.data) +
 An alternate to a histogram is a frequency polygon graph (distributions of values for continuous numerical variables). Instead of displaying bars,  counts of continuous variables are displayed as lines. This is advantageous if you want to display multiple variables or categories of variables at once.
 
 ```{r, fig.height = 3, fig.width = 4}
+#within the brackets above, it defines the set of the graph space
 #
 ggplot(USGS.flow.data) +
   geom_freqpoly(aes(x = gage.height.mean), bins = 50) +
   geom_freqpoly(aes(x = gage.height.min), bins = 50, color = "darkgray") +
   geom_freqpoly(aes(x = gage.height.max), bins = 50,  lty = 2) +
   scale_x_continuous(limits = c(0, 10))
+#when the column names change, aes must be applied individually, not within ggplot
 
 #
 ggplot(USGS.flow.data) +
