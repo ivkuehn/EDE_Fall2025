@@ -37,6 +37,7 @@ library(tidyverse)
 library(lubridate)
 library(here)
 library(dplyr)
+library(ggplot2)
 
 getwd()
 ecotox_data <- read.csv(file = here("./Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv"))
@@ -82,38 +83,43 @@ dim(ecotox_data)
 ```{r Q6}
 #summary(ecotox_data$Effect)
 #sort(ecotox_data$Effect, decreasing=FALSE)
-#names(which.max(table(ecotox_data$Effect)))
-names(sort(ecotox_data$Effect, decreasing=TRUE, na.last=TRUE)[1])
+
+names(sort(table(ecotox_data$Effect), decreasing=T))
+names(which.max(table(ecotox_data$Effect)))
 
 ```
 
-> Answer: The dimensions of the neonicotinoids ecotoxicology data set is 4623 rows by 30 columns. The most common effect
+> Answer: The dimensions of the neonicotinoids ecotoxicology data set is 4623 rows by 30 columns. The most common effect studied is Population, followed by Mortality and Behavior. These would be the greatest interest because Population would show how the use of neonicotinoids affect insect populations (i.e. growth), mortality would return the number of population deaths that occur as a result of the insecticide, and behavior would return data about eating habits, communication, and reproduction changes that arise after insecticide use. 
 
 
 7.  Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? Feel free to do a brief internet search for more information if needed.[TIP: Explore the help on the `summary()` function, in particular the `maxsum` argument...]
 
 ```{r Q7}
-
+summary(as.factor(ecotox_data$Species.Common.Name), maxsum=7)
 
 ```
 
-> Answer:
+> Answer: The six most commonly studied species in the dataset are Honey Bees, Parasitic Wasps, Buff Tailed Bumblebees, Carniolan Honey Bees, Bumble Bees, and Italian Honeybees. The honeybees and bumblebees in the top six studied species are important pollinators for crop production, and Parasitic Wasps, while reliant on deaths of other insects to repopulate, are also important pollinators. These species in particular are at risk from neonicotinoids because pollen becomes toxic after the insecticide is absorbed by the plant, meaning these species die or expereince long-lasting damage after ingesting nectar or pollen.
+>
+> Source: https://xerces.org/sites/default/files/2018-05/16-023_01_XercesSoc_ExecSummary_How-Neonicotinoids-Can-Kill-Bees_web.pdf
 
 8.  Concentrations are always a numeric value. What is the class of `Conc.1..Author.` column in the dataset, and why is it not numeric? [Tip: Viewing the dataframe may be helpful...]
 
 ```{r Q8}
-
-
+class(ecotox_data$Conc.1..Author.)
+head(ecotox_data$Conc.1..Author., n=25)
+tail(ecotox_data$Conc.1..Author., n=25)
 ```
 
-> Answer:
+> Answer: The elements of the Conc.1..Author column are characters, not numbers. Looking at the data in the column, concentrations are listed in different formats from numeric, to estimations, or having no concentration lsited. Given the different results, the best format to present the data is in character class.
 
 ## Explore your data graphically (Neonics)
 
 9.  Using `geom_freqpoly`, generate a plot of the number of studies conducted by publication year.
 
 ```{r Q9}
-
+ggplot2(ecotox_data$Publication.Year, aes(x=Publication.Year) + 
+         geom_freqpoly(binwidth = 1))
 
 ```
 
