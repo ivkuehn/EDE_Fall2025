@@ -60,27 +60,34 @@ NEON_data <- read.csv(file = here("./Data/Raw/NEON_NIWO_Litter_massdata_2018-08_
 4.  How is litter and woody debris sampled as part of the NEON network? Read the NEON_Litterfall_UserGuide.pdf document to learn more. List three pieces of salient information about the sampling methods here:
 
 > Answer: 
- 1.
- 2.
- 3. 
+ 1. Litter is dropped from the forest canopy and is sampled from PVC basket traps elevated around 80 cm off the ground.
+ 2. Fine wood debris dropped from the forest canpoy is sampled from rectangular ground traps. 
+ 3. Litter and debris sampling occurs at sites where woody vegetation exceeds 2m in height.
 
 ## Obtain basic summaries of your data (Neonics)
 
 5.  What are the dimensions of the dataset?
 
 ```{r Q5}
+dim(ecotox_data)
 
+# The first element of dim() is the number of rows, the second element is the number of columns
+
+# The ecotox_data set is 4623 rows and 30 columns
 
 ```
 
 6.  Using the `summary` function on the "Effect" column, determine the most common effects that are studied. Why might these effects specifically be of interest? [Tip: The `sort()` command is useful for listing the values in order of magnitude...]
 
 ```{r Q6}
-
+#summary(ecotox_data$Effect)
+#sort(ecotox_data$Effect, decreasing=FALSE)
+#names(which.max(table(ecotox_data$Effect)))
+names(sort(ecotox_data$Effect, decreasing=TRUE, na.last=TRUE)[1])
 
 ```
 
-> Answer:
+> Answer: The dimensions of the neonicotinoids ecotoxicology data set is 4623 rows by 30 columns. The most common effect
 
 
 7.  Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? Feel free to do a brief internet search for more information if needed.[TIP: Explore the help on the `summary()` function, in particular the `maxsum` argument...]
