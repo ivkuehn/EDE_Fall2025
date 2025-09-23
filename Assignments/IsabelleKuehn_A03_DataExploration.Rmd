@@ -120,7 +120,7 @@ head(ecotox_data$Conc.1..Author., n=25)
 tail(ecotox_data$Conc.1..Author., n=25)
 ```
 
-> Answer: The elements of the Conc.1..Author column are characters, not numbers. Looking at the data in the column, concentrations are listed in different formats from numeric, to estimations, or having no concentration lsited. Given the different results, the best format to present the data is in character class.
+> Answer: The elements of the Conc.1..Author column are characters, not numbers. Looking at the data in the column, concentrations are listed in different formats from numeric, to estimations, or having no concentration listed. Given the different results, the best format to present the data is in character class.
 
 ## Explore your data graphically (Neonics)
 
@@ -146,7 +146,7 @@ ggplot(data = ecotox_data, aes(x=Publication.Year, color = Test.Location)) +
 
 Interpret this graph. What are the most common test locations, and do they differ over time?
 
-> Answer: Looking at the graph, the most common test locations are the lab and naturally in the field. Over time, testing in the lab remained higher than the rest, but peaked largely between the 2010-2015 publication years. Just before 2010, testing in the natural field rose to higher rates than testing in the lab.
+> Answer: Looking at the graph, the most common test locations are the lab and in natural field locations. Over time, testing in the lab remained higher than the rest, but peaked largely between the 2010-2015 publication years. Just before 2010, testing in the natural field rose to higher rates than testing in the lab.
 
 11. Create a bar graph of Endpoint counts. What are the two most common end points, and how are they defined? Consult the ECOTOX_CodeAppendix for more information. 
 
@@ -192,12 +192,12 @@ unique(NEON_data$plotID)
 summary(NEON_data$plotID)
 ```
 
-> Answer: unique() returns a list of the different plotIDs found in the dataset, while summary() returns a list of of the different plotIDs in the data set and how many times the plotID is listed.
+> Answer: unique() returns a list of each unique plotID found in the dataset, while summary() returns a list of of the different plotIDs in the data set and how many times the plotID is listed (frequency).
 
 14. Create a bar graph of functionalGroup counts. This shows you what type of litter is collected at the Niwot Ridge sites. Notice that litter types are fairly equally distributed across the Niwot Ridge sites.
 
 ```{r Q14}
-# Plot of functional gorups by count
+# Plot of functional groups by count
 
 ggplot(data = NEON_data, aes(x=functionalGroup)) + geom_bar(stat = "count") +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
@@ -207,7 +207,7 @@ ggplot(data = NEON_data, aes(x=functionalGroup)) + geom_bar(stat = "count") +
 15. Using `geom_boxplot` and `geom_violin`, create a boxplot and a violin plot of dryMass by functionalGroup.
 
 ```{r Q15}
-# Box plot and violin plot of dry mass per functional gorup
+# Box plot and violin plot of dry mass per functional group
 
 ggplot(data = NEON_data, aes(x=functionalGroup, y=dryMass)) + geom_bar(stat="identity", 
      fill = "steelblue") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
@@ -219,7 +219,7 @@ ggplot(data = NEON_data, aes(x=functionalGroup, y=dryMass)) + geom_violin(color 
 
 Why is the boxplot a more effective visualization option than the violin plot in this case?
 
-> Answer: In this case, the boxplot provides a more effective visualization because the purpose of the plot is to show a quantity per group which can be shown easily using a box plot since categories are easily sorted and comparable. Violin plots would be used to show distribution of data within a functional group, but since the data being graphed is already split into separate groups and is only plotting dry mass, there is no horizontal distribution on the graph resutling in the less effective thin-line visualization. 
+> Answer: In this case, the boxplot provides a more effective visualization because it shows the dry mass per functional group which uses categorical separation to easily display comparable dry mass values between each functional group. Violin plots would be used to show distribution of data within a functional group, but since the data being graphed is already split into separate groups and is only plotting dry mass, there is no horizontal distribution on the graph resutling in the less effective thin-line visualization. 
 
 What type(s) of litter tend to have the highest biomass at these sites?
 
