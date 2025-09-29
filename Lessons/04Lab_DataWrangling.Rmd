@@ -1,4 +1,4 @@
----
+%>% ---
 title: "Lab 4: Data Wrangling"
 author: "Environmental Data Analytics | John Fay and Luana Lima | Developed by Kateri Salk"
 output: pdf_document
@@ -80,16 +80,27 @@ NTL.phys.data.JunethruOctober <- filter(NTL.phys.data, daynum %in% c(152:304))
 # Exercise 1: 
 # filter NTL.phys.data for the year 1999
 # what code do you need to use, based on the class of the variable?
+NTL.phys.data.1999 <- 
+  filter(NTL.phys.data, year4 %in% c(1999))
+
+# can also use NTL.phys.data %>% filter(year4==1999)
 
 
 # Exercise 2: 
 # filter NTL.phys.data for Tuesday Lake from 1990 through 1999.
+NTL.phys.data.Tuesday <-
+  filter(NTL.phys.data, lakename %in% c("Tuesday Lake"), year4 %in% c(1990:1999))
 
+# can also use NTL.phys.data <- %>% 
+    # filter (
+      # lakename == "Tuesday Lake", (<- can use comma or &)
+      # year4 %in% c(1990:1999) [inlcuding the vector notation c() isn't necessary for this to work- but this is only the case for _:_ - it wouldn't work for "year 4 %in% 1990,1999"]
+    # )
 
 ```
 Question: Why don't we filter using row numbers?
 
-> Answer: 
+> Answer: We don't filter using row numbers because data is sorted in columns.
 
 ---
 
@@ -104,20 +115,32 @@ Let's say we want to take our raw dataset (NTL.phys.data), *then* filter the dat
 #Example using pipes to wrangle data: 
 #Add pipes in the correct place below
 NTL.phys.data.processed <- 
-  NTL.phys.data
-  filter(lakename == "Paul Lake" | lakename == "Peter Lake") 
-  select(lakename, sampledate:temperature_C) 
+  NTL.phys.data %>% 
+  filter(lakename == "Paul Lake" | lakename == "Peter Lake") %>% 
+  select(lakename, sampledate:temperature_C) %>% 
   mutate(temperature_F = (temperature_C*9/5) + 32)
 
 #Exercise 3: Using a pipe filter NTL.phys.data for Tuesday Lake from 1990 
 # through 1999 only for July.
+NTL.phys.data.July <- NTL.phys.data %>% 
+  filter(
+    lakename == "Tuesday Lake",
+    year4 %in% c(1990:1999),
+    format(NTL.phys.data$sampledate, "%m") == "07")
+    # can also use month(sampledate) == 7
 
   
 
 #Exercise 4: Using the data from part 3, a pipe, and the summarize() function, 
 # find the mean surface water temperature. 
 # (hint: you will need to filter for depth==0). 
+NTL.phys.data.avg_temp <- NTL.phys.data.July %>% 
+  summarize(
+    filter(
+    depth %in% c(0),
+    mutate(mean(NTL.phys.data$temperature_C))))
 
+## ^ NOT CORRECT
   
 ```
 
@@ -132,7 +155,8 @@ For gather we will use `pivot_longer` and for spread we will use `pivot_wider`.
 #  on the deck of the sampling boat) into one column using pivot_longer. Name
 #  the new column holding the irradiance type as "Irradiance_Type", and name the
 #  new column holding the irradiance values as "Irradiance_Value".
-
+NTL.phys.data.irradiance <-
+  pivot_longer(irradianceWater, irradianceDeck)
 
 
 #Exercise 6: Spread temperatureC into more than one column based on the depth.
