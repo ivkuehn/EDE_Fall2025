@@ -37,10 +37,10 @@ library(tidyverse)
 library(lubridate)
 library(here)
 
-#1b 
+#1b Set working directory
 getwd()
 
-#1c 
+#1c Write new csvs
 EPA_O3_2018 <- read.csv(file = here("./Data/Raw/EPAair_O3_NC2018_raw.csv"), 
                         stringsAsFactors = TRUE)
 EPA_O3_2019 <- read.csv(file = here("./Data/Raw/EPAair_O3_NC2019_raw.csv"), 
@@ -50,11 +50,14 @@ EPA_PM25_2018 <- read.csv(file = here("./Data/Raw/EPAair_PM25_NC2018_raw.csv"),
 EPA_PM25_2019 <- read.csv(file = here("./Data/Raw/EPAair_PM25_NC2019_raw.csv"), 
                           stringsAsFactors = TRUE)
 
-#2 
+#2 Find the dimensions for each data set
 dim(EPA_O3_2018)
 dim(EPA_O3_2019)
 dim(EPA_PM25_2018)
 dim(EPA_PM25_2019)
+
+# Check: All datasets have the same number of columns and a unique number of 
+# rows!
 
 ```
 
@@ -72,13 +75,13 @@ dim(EPA_PM25_2019)
 6. Save all four processed datasets in the Processed folder. Use the same file names as the raw files but replace "raw" with "processed".
 
 ```{r questions 3 thru 4}
-#3
+#3 Column to Date objects
 EPA_O3_2018$Date <- as.Date(EPA_O3_2018$Date, format = "%m/%d/%Y")
 EPA_O3_2019$Date <- as.Date(EPA_O3_2019$Date, format = "%m/%d/%Y")
 EPA_PM25_2018$Date <- as.Date(EPA_PM25_2018$Date, format = "%m/%d/%Y")
 EPA_PM25_2019$Date <- as.Date(EPA_PM25_2019$Date, format = "%m/%d/%Y")
 
-#4
+#4 Selecting specific columns
 EPA_O3_2018_data <- EPA_O3_2018 %>% select(
   Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, 
   SITE_LONGITUDE)
@@ -95,11 +98,11 @@ EPA_PM25_2019_data <- EPA_PM25_2019 %>% select(
   Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, 
   SITE_LONGITUDE)
 
-#5
+#5 Fill AQS_PARAMETER_DESC with PM2.5
 EPA_PM25_2018_data$AQS_PARAMETER_DESC <- "PM2.5"
 EPA_PM25_2019_data$AQS_PARAMETER_DESC <- "PM2.5"
 
-#6
+#6 Write csvs
 write.csv(EPA_O3_2018_data, file = file.path(
   "./Data/Processed", "EPAair_O3_NC2018_processed.csv"))
 write.csv(EPA_O3_2019_data, file = file.path(
@@ -140,10 +143,12 @@ write.csv(EPA_PM25_2019_data, file = file.path(
 11. Save your processed dataset with the following file name: "EPAair_O3_PM25_NC1819_Processed.csv"
 
 ```{r questions 7 thru 11}
-#7
-bound_data <- rbind(EPA_O3_2018_data, EPA_O3_2019_data, EPA_PM25_2018_data, EPA_PM25_2019_data)
+#7 Bind data to one dataset!
+bound_data <- rbind(EPA_O3_2018_data, EPA_O3_2019_data, EPA_PM25_2018_data, 
+                    EPA_PM25_2019_data)
 
-#8 
+#8 Use question instructions as sequence for determining pipe order and specific 
+# data
 processed_data <- bound_data %>%
   filter(Site.Name %in% c("Linville Falls", "Durham Armory", "Leggett", 
                           "Hattie Avenue", "Clemmons Middle", 
@@ -159,17 +164,19 @@ processed_data <- bound_data %>%
   ) %>% 
   mutate(Month = month(Date), Year = year(Date))
 
+# Confirm dataset matches hinted dataset, 14752 x 9
 dim(processed_data)
+# It does!
 
 #9
 # To spread the dataset, use pivot_wider from Module lessons
 spread_processed_data <- processed_data %>% 
   pivot_wider(names_from = AQS_PARAMETER_DESC, values_from = mean_AQI)
 
-#10
+#10 Find dimension of summarized data
 dim(spread_processed_data)
 
-#11
+#11 Write new csv
 write.csv(spread_processed_data, file = file.path("./Data/Processed", 
                                                   "EPAair_O3_PM25_NC1819_Processed.csv"))
 
@@ -184,7 +191,8 @@ write.csv(spread_processed_data, file = file.path("./Data/Processed",
 
 ```{r questions 12 and 13}
 
-#12
+#12 Use pipe sequence following instructions, but don't take out NA PM2.5 values 
+# as instructed
 summary_data_frame <- spread_processed_data %>% 
   group_by(Site.Name, Month, Year) %>% 
   summarise(
@@ -193,7 +201,7 @@ summary_data_frame <- spread_processed_data %>%
   ) %>% 
   drop_na(mean_O3_summary)
 
-#13
+#13 Find dimension of final dataset
 dim(summary_data_frame)
 
 # The dimension of this summary data frame is 182 x 5
