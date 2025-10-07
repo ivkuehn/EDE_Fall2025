@@ -45,12 +45,11 @@ library(colormap)
 getwd()
 
 nutrients.data <- read.csv(file = here(
-  "./Data/Processed_KEY/
-  NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv"), 
+  "./Data/Processed_KEY/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv"), 
   stringsAsFactors = TRUE)
 litter.data <- read.csv(file=here(
-  "./Data/Processed_KEY/
-  NEON_NIWO_Litter_mass_trap_Processed.csv"), stringsAsFactors = TRUE)
+  "./Data/Processed_KEY/NEON_NIWO_Litter_mass_trap_Processed.csv"), 
+  stringsAsFactors = TRUE)
 
 
 #2 
@@ -60,6 +59,11 @@ litter.data$collectDate <- as.Date(litter.data$collectDate,
                                    format = "%Y-%m-%d")
 
 ```
+
+```{r include = FALSE}
+knitr::opts_chunk$set(fig.height = 5, fig.width = 7)
+```
+
 ## Define your theme
 3. Build a theme and set it as your default theme. Customize the look of at least two of the following: 
  * Plot background
@@ -78,9 +82,9 @@ my_theme <- theme_base()  +
     #text =              element_text(),
     
     # Modified inheritance structure of text element
-    plot.title =        element_text(color = "darkblue"),
-    axis.title.x =      element_text(color = "black"),
-    axis.title.y =      element_text(color = "black"),
+    plot.title =        element_text(color = "darkblue", size = 14),
+    axis.title.x =      element_text(color = "black", size = 12),
+    axis.title.y =      element_text(color = "black", size = 12),
     axis.text =         element_text(color = "black"),
     
     # Modified inheritance structure of line element
@@ -117,7 +121,8 @@ tp_po4_plot <- nutrients.data %>%
   xlab("Phosphate") +
   labs(title = "Total Phosphorous by PO4 for Peter and Paul Lakes", 
        color = "Lake Name") +
-  my_theme
+  my_theme +
+  theme(legend.title = element_text(size = 12))
 
 tp_po4_plot
   
@@ -139,9 +144,12 @@ temp_boxplot <- nutrients.data %>%
   geom_boxplot() +
   ylab("Temperature (ºC)") +
   xlab("Month") +
-  labs(color = "Lake Name") +
+  labs(title = "Temperature (ºC) by Month for each Lake", color = "Lake Name") +
   my_theme +
-  theme(axis.title = element_text(size = 12), legend.position = "none")
+  theme(axis.title = element_text(size = 10), 
+        legend.position = "top", 
+        legend.text = element_text(size = 8), 
+        legend.title = element_text(size = 8))
 temp_boxplot
 
 tp_boxplot <- nutrients.data %>% 
@@ -149,11 +157,12 @@ tp_boxplot <- nutrients.data %>%
   geom_boxplot() +
   ylab("Total Phosphorous (ug)") +
   xlab("Month") +
-  labs(color = "Lake Name") +
+  labs(title = "Total Phosphorous (ug) by Month for each Lake", 
+       color = "Lake Name") +
   my_theme + 
-  theme(axis.title = element_text(size = 12), 
+  theme(axis.title = element_text(size = 10), 
         legend.position = "top", 
-        legend.text = element_text(size = 6), 
+        legend.text = element_text(size = 8), 
         legend.title = element_text(size = 8))
 tp_boxplot
 
@@ -162,21 +171,35 @@ tn_boxplot <- nutrients.data %>%
   geom_boxplot() +
   ylab("Total Nitrogen (ug)") +
   xlab("Month") +
-  labs(color = "Lake Name") +
+  labs(title = "Total Nitrogen (ug) by Month for each Lake", 
+       color = "Lake Name") +
   my_theme + 
-  theme(axis.title = element_text(size = 12), legend.position = "none")
+  theme(axis.title = element_text(size = 10), 
+        legend.position = "top", 
+        legend.text = element_text(size = 8), 
+        legend.title = element_text(size = 8))
 tn_boxplot
 
+temp_boxplot_edit <- temp_boxplot + theme(plot.title = element_blank(),
+        legend.position = "none", 
+        legend.text = element_blank(), 
+        legend.title = element_blank())
+tp_boxplot_edit <- tp_boxplot + theme(plot.title = element_blank(), 
+        legend.position = "top", 
+        legend.text = element_text(size = 6), 
+        legend.title = element_text(size = 6))
+tn_boxplot_edit <- tn_boxplot + theme(plot.title = element_blank(), 
+        legend.position = "none", 
+        legend.text = element_blank(), 
+        legend.title = element_blank())
 
-plot_grid(temp_boxplot, tp_boxplot, tn_boxplot,
+plot_grid(temp_boxplot_edit, tp_boxplot_edit, tn_boxplot_edit,
           ncol = 3
           )
 
-# I feel like this plot could've been tidier, but my instinct would be to use 
-# facets to separate the plots better- except I'm not sure how facet_wrap can be 
-# used on entire plots instead of just variables. I tried a few times but was 
-# unsuccessful. I'd be curious to know if this could work, because in it's 
-# current state I feel like it could improve.
+# I feel like this plot could've been tidier, but I'm not really sure how else 
+# to organize it with cowplot. I looked at the alignment website but couldn't 
+# find much else.
 
 ```
 
@@ -202,7 +225,8 @@ Litter.plot <- needle.data %>%
        color = "NLCD Class") +
   scale_color_viridis_d(option = "viridis") +
   my_theme +
-  theme(legend.key = element_blank(), legend.position = 'top', 
+  theme(legend.text = element_text(size = 12), legend.key = element_blank(), 
+        legend.position = 'top', 
         axis.text.x = element_text(angle = 45, hjust = 1, size = 10))
 print(Litter.plot)
 
@@ -217,7 +241,8 @@ Litter.facet.plot <- needle.data %>%
   labs(title = "Needle Dry Mass Across Collection Dates", 
        color = "NLCD Class") +
   my_theme +
-  theme(legend.position = 'top', axis.text.x = element_text(
+  theme(legend.text = element_text(size = 12), legend.position = 'top', 
+        axis.text.x = element_text(
     angle = 45,  hjust = 1, size = 10))
 print(Litter.facet.plot)
 
