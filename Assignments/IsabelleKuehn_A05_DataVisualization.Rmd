@@ -44,13 +44,20 @@ library(RColorBrewer)
 library(colormap)
 getwd()
 
-nutrients.data <- read.csv(file = here("./Data/Processed_KEY/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv"), stringsAsFactors = TRUE)
-litter.data <- read.csv(file=here("./Data/Processed_KEY/NEON_NIWO_Litter_mass_trap_Processed.csv"), stringsAsFactors = TRUE)
+nutrients.data <- read.csv(file = here(
+  "./Data/Processed_KEY/
+  NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv"), 
+  stringsAsFactors = TRUE)
+litter.data <- read.csv(file=here(
+  "./Data/Processed_KEY/
+  NEON_NIWO_Litter_mass_trap_Processed.csv"), stringsAsFactors = TRUE)
 
 
 #2 
-nutrients.data$sampledate <- as.Date(nutrients.data$sampledate, format = "%Y-%m-%d")
-litter.data$collectDate <- as.Date(litter.data$collectDate, format = "%Y-%m-%d")
+nutrients.data$sampledate <- as.Date(nutrients.data$sampledate, 
+                                     format = "%Y-%m-%d")
+litter.data$collectDate <- as.Date(litter.data$collectDate, 
+                                   format = "%Y-%m-%d")
 
 ```
 ## Define your theme
@@ -144,7 +151,10 @@ tp_boxplot <- nutrients.data %>%
   xlab("Month") +
   labs(color = "Lake Name") +
   my_theme + 
-  theme(axis.title = element_text(size = 12), legend.position = "top", legend.text = element_text(size = 6), legend.title = element_text(size = 8))
+  theme(axis.title = element_text(size = 12), 
+        legend.position = "top", 
+        legend.text = element_text(size = 6), 
+        legend.title = element_text(size = 8))
 tp_boxplot
 
 tn_boxplot <- nutrients.data %>% 
@@ -161,6 +171,12 @@ tn_boxplot
 plot_grid(temp_boxplot, tp_boxplot, tn_boxplot,
           ncol = 3
           )
+
+# I feel like this plot could've been tidier, but my instinct would be to use 
+# facets to separate the plots better- except I'm not sure how facet_wrap can be 
+# used on entire plots instead of just variables. I tried a few times but was 
+# unsuccessful. I'd be curious to know if this could work, because in it's 
+# current state I feel like it could improve.
 
 ```
 
@@ -182,14 +198,30 @@ Litter.plot <- needle.data %>%
   geom_point()+
   ylab("Dry Mass (Needles)") +
   xlab("Date") +
-  labs(title = "Needle Dry Mass Across Collection Dates", color = "NLCD Class") +
-  scale_color_viridis_d(option = "mako") +
-  theme(legend.position = 'top', axis.text.x = element_text(angle = 45,  hjust = 1, size = 10))
+  labs(title = "Needle Dry Mass Across Collection Dates", 
+       color = "NLCD Class") +
+  scale_color_viridis_d(option = "viridis") +
+  my_theme +
+  theme(legend.key = element_blank(), legend.position = 'top', 
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 10))
 print(Litter.plot)
-#7
 
+#7
+Litter.facet.plot <- needle.data %>% 
+  ggplot(aes(x = collectDate, y = dryMass, color = nlcdClass))+
+  geom_point()+
+  facet_wrap(facets= vars(nlcdClass),
+               nrow=3) +
+  ylab("Dry Mass (Needles)") +
+  xlab("Date") +
+  labs(title = "Needle Dry Mass Across Collection Dates", 
+       color = "NLCD Class") +
+  my_theme +
+  theme(legend.position = 'top', axis.text.x = element_text(
+    angle = 45,  hjust = 1, size = 10))
+print(Litter.facet.plot)
 
 ```
 Question: Which of these plots (6 vs. 7) do you think is more effective, and why? 
 
-> Answer:
+> Answer: I believe the plot created in question 6 is more effective becasue the facet wrap separates each dataset making comparison along the changing y-axis harder to identify. For each NLCD Class, the dry mass needle data has the same date of collection which means each dataset will have data present at the same points along the x-axis. As a result, the most important variable to measure between datasets is the dry mass of needles, as that is the variable changing between each NLCD Class. Looking at the plot in question 7, facet wrapping makes comparison between classes more difficult making it less effective than the graph produced in question 6. The plot for question 6 shows direct similarities and differences between dry mass collection because all data is on the same plot. While there is overlap, it isn't enough to detract from the results, while the separation from the facet wrapping is. I find the facet wrapped plot to be the best representation for individual analysis of each class, but for the effectiveness of comparing classes, question 6 has the most effective visual representation.
