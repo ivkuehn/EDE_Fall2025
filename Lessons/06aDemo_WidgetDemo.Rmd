@@ -1,0 +1,19 @@
+---
+title: Interactive Rmd
+output: html_document
+runtime: shiny
+---
+  
+```{r, echo = FALSE}
+library(shiny)
+
+#below is the interactive interface
+numericInput("my_widget",
+"How many cars?", 5)
+
+#below is the code that observes any changes that are made
+renderTable({
+head(cars, input$my_widget)
+})
+```
+
