@@ -26,6 +26,8 @@ editor_options:
 6.  When you have completed the assignment, **Knit** the text and code into a single PDF file.
 7.  **Be sure that you also commit and push your final Rmd document to your GitHub account**.
 
+---
+
 ## Task 1 - Basic Markdown
 
 Using markdown, create a 2-column table beneath the `Table: EPA Air Quality` line below that summarizes the metadata of the EPA Air Quality data.
@@ -43,7 +45,6 @@ Using markdown, create a 2-column table beneath the `Table: EPA Air Quality` lin
 |Filename|EPAair_O3_PM25_NC1819_Processed.csv|
 |Date|2018-2019|
 |Source|EPA Air Quality System (AQS)|
-
 
 
 ## Task 2 - Import packages and data, suppressing messages
@@ -105,12 +106,12 @@ summary_Ozone <- epa_data %>%
 knitr::kable(summary_PM25,
              col.names = c("County", "$\\mu g/m^3$"),
              digits = 2,
-             caption = "Table 2: Mean Particulates (2.5mm)")
+             caption = "Mean Particulates (2.5mm)")
 
 knitr::kable(summary_Ozone,
              col.names = c("County", "$\\mu g/m^3$"),
              digits = 2,
-             caption = "Table 3: Mean Ozone")
+             caption = "Mean Ozone")
 ```
 
 
@@ -135,7 +136,7 @@ Data_2018 <- epa_data %>%
 OZ18_boxplot <- Data_2018 %>% 
   ggplot(aes(x = factor(Month, levels = 1:12, labels = month.abb), y = Ozone)) +
   geom_boxplot() +
-  ylab("Concentration (\U003BCg/m\U00B3)") +
+  ylab(expression(paste("Concentration (", mu, "g/m"^3,")"))) +
   # the earlier notation for mu didn't work here
   xlab("Month") +
   theme(legend.position = "none",
@@ -156,7 +157,7 @@ Data_2019 <- epa_data %>%
 OZ19_boxplot <- Data_2019 %>% 
   ggplot(aes(x = factor(Month, levels = 1:12, labels = month.abb), y = Ozone)) +
   geom_boxplot() +
-  ylab("Concentration (\U003BCg/m\U00B3)") +
+  ylab(expression(paste("Concentration (", mu, "g/m"^3,")"))) +
   xlab("Month") +
   theme(legend.position = "none",
         legend.title = element_blank(),
@@ -176,17 +177,13 @@ Add a table of contents and list of figures to your document and knit to a PDF. 
 
 ## Git Repository
 
-> https://github.com/ivkuehn/EDE_Fall2025
+https://github.com/ivkuehn/EDE_Fall2025
 
-> I did not use AI in the completion of this assignment.
->
->-Isabelle Kuehn
->
->-October 20, 2025
+I did not use AI in the completion of this assignment.
+
+-Isabelle Kuehn
+
+-October 20, 2025
 
 
-```{r}
-#ask about greek letters
-#ask about figure spacing
-```
 
