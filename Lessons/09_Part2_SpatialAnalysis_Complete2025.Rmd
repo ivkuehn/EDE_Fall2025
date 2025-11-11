@@ -78,7 +78,7 @@ st_crs(epa_pm25_sites_sf)
 
 #Plot the data
 ggplot(data=epa_pm25_sites_sf) +
-  geom_sf()
+  geom_sf(aes(color=meanPM))
 ```
 
 ## 2.2 Reading shapefiles into R with `sf`
@@ -116,20 +116,17 @@ mapView(counties_sf)
 
 ```{r read HUCs shapefile}
 #Read the shapefile into an sf dataframe named "huc8_sf"
-huc8_sf <- st_read(here('./Data/Spatial/NCHUC8.shp'))
+huc8_sf <- st_read(here('Data/Spatial/NCHUC8.shp'))
 
 #Reveal the column names
-colnames(huc8_sf)
+names(huc8_sf)
 
 #Check the CRS
 st_crs(huc8_sf)
 
 #View the data as a map, colored by the acreage in each
-mapview(huc8_sf, zcol = 'ACRES')
-
-ggplot(data = huc8_sf, aes(fill = ACRES)) +
-  geom_sf() +
-  scale_fill_viridis_c()
+ggplot(data=huc8_sf) + geom_sf(aes(fill=ACRES))
+mapview(huc8_sf,zcol='ACRES')
 
 ```
 
@@ -140,16 +137,16 @@ ggplot(data = huc8_sf, aes(fill = ACRES)) +
 
 ```{r Select the Upper Neuse HUC 8}
 #Read the shapefile into an sf dataframe
-upperneuse_sf <- st_read(here('./Data/Spatial/NCHUC8.shp')) %>%
+upper_neuse <- st_read(here('Data/Spatial/NCHUC8.shp')) %>% 
   filter(SUBBASIN == 'Upper Neuse')
 
 #Create a map
-mapview(huc8_sf, col.regions = 'grey') +
-  mapview(upperneuse_sf, col.regions = 'yellow', color = 'blue')
+ggplot() + 
+  geom_sf(data=huc8_sf, fill='gray') + 
+  geom_sf(data=upper_neuse, color='blue',fill='yellow') 
 
-ggplot(data = huc8_sf, aes(fill = 'ACRES')) +
-  geom_sf(data = huc8_sf, fill = 'grey') +
-  geom_sf(data = upperneuse_sf, fill = 'yellow', color = 'blue')
+mapview(huc8_sf,col.regions='gray') + 
+  mapview(upper_neuse,col.regions='yellow',color='blue')
 
 ```
 
@@ -161,7 +158,7 @@ ggplot(data = huc8_sf, aes(fill = 'ACRES')) +
 
 Joining data to spatial features works the same as joining tables: we just need a common attribute to link the two datasets. Here, we'll add demographic data to our Census county feature, using the State&County FIPS code as the common attributes.
 
-The data we'll add here is the CDC's Social Vulnerability Index data. Information on this dataset is available [here](https://www.atsdr.cdc.gov/placeandhealth/svi/documentation/SVI_documentation_2020.html).
+The data we'll add here is the CDC's Social Vulnerability Index data. Information on this dataset is available [here](https://www.atsdr.cdc.gov/place-health/php/svi/svi-data-documentation-download.html).
 
 Brief notes:
   - `E_` are estimates; `M_` are margins of error
@@ -216,7 +213,7 @@ mapview(counties_sf_join,
 ggplot() + 
   geom_sf(data=counties_sf_join,aes(fill = RPL_THEME1),alpha=0.5) + 
   scale_fill_gradient2(low="red",high="blue",midpoint = 0.5) + 
-  geom_sf(data=epa_pm25_sites_sf) +
+  geom_sf(data=epa_pm25_sites_sf,aes(size=maxPM)) +
   labs(fill='Socio\nEcononomic\nIndex')
 
 ```
@@ -227,18 +224,25 @@ ggplot() +
 
 ```{r}
 #Import data, setting HUC_12 to be factors, and computing a HUC_8 column
-wind_df <- read.csv('https://raw.githubusercontent.com/ENC859/EnviroAtlasData/main/Wind_Energy.csv', stringsAsFactors = T, colClasses = c('HUC_12' = 'factor')) %>%
-  mutate(huc8 = substr(HUC_12, start = 0, stop = 8)) %>%
-  group_by(huc8) %>%
-  summarize(
-    sum_energy = sum(AvgWindEnergy)
-  )
-  
-#Join to HUC_8 features
+wind_energy <- read.csv(
+  file='https://raw.githubusercontent.com/ENV859/EnviroAtlasData/main/Wind_Energy.csv',
+  stringsAsFactors = TRUE,
+  colClasses = c('HUC_12'='factor')
+) %>% 
+  mutate(HUC_8 = substr(HUC_12,0,8)) %>% 
+  group_by(HUC_8) %>% 
+  summarize(SumWindEnergy=sum(AvgWindEnergy))
 
+#Join to HUC_8 features
+HUC_8_wind <- huc8_sf %>% 
+  left_join(
+    y=wind_energy,
+    by='HUC_8'
+  )
 
 #View the outputs
-
+HUC_8_wind %>% ggplot + geom_sf(aes(fill=SumWindEnergy))
+mapview(HUC_8_wind,zcol='SumWindEnergy')
 
 ```
 
@@ -261,15 +265,19 @@ mapview(state_sf)
 *Now you try*: Aggregate the HUC_8 data on the `DWQ_Basin` attribute, computing the sum of the `ACRES` field and view the result.
 
 ```{r Aggregate the HUC data on an attribute, saving as huc2_sf}
-#List the unique values in the DWQ_Basin field
+mapview(huc8_sf,zcol='DWQ_Basin',legend=F)
 
+#List the unique values in the DWQ_Basin field
+unique(huc8_sf$DWQ_Basin)
 
 #Summarize on DWQ Basin value
-huc2_sf <- 
+huc2_sf <- huc8_sf %>% 
+  group_by(DWQ_Basin) %>% 
+  summarize(ACRES = sum(ACRES))
   
 
 #Map the data
-
+mapview(huc2_sf,zcol='ACRES')
 
 ```
 
@@ -352,11 +360,14 @@ triCo <- counties_sf_utm %>%
 
   
 #Grab the intersecting HUC_8s
-
+triHUCs <- huc8_sf_utm %>% 
+  st_filter(triCo,.predicate = st_intersects)
+mapview(triHUCs)+mapview(triCo,alpha.regions = 0,color='red')
 
 
 #Intersect the HUC_8s
-
+triHUCs_clipped <- huc8_sf_utm %>% st_intersection(triCo)
+mapview(triHUCs_clipped)
 
 ```
 
@@ -430,14 +441,26 @@ resultMask <- st_intersects(counties_sf_utm,
 selCounties <- counties_sf_utm[resultMask,]
 
 #Map the results
-mapView(counties_sf[resultMask,])
+mapView(counties_sf[resultMask,]) + mapview(theSite_sfc_transformed)
 
 ```
 
 > Questions: how might we use the `st_buffer` function to show all counties within 30km of the site?
 
 ```{r Select counties within a 30 km area from the site}
+#Buffer the point 30km
+theSite_sfc_transformed_buffered = st_buffer(theSite_sfc_transformed,30000)
 
+#Create a boolean mask 
+resultMask2 <- st_intersects(counties_sf_utm, 
+                            theSite_sfc_transformed_buffered,
+                            sparse = FALSE) 
+
+#Filter the counties dataset using the boolean mask
+selCounties2 <- counties_sf_utm[resultMask2,]
+
+#Map the results
+mapView(selCounties2) + mapview(theSite_sfc_transformed_buffered)
                             
 ```
 
@@ -507,7 +530,7 @@ leaflet() %>%
 
 ```
 
-### 4.2.3 Leaflet - linked and synced plots
+### 4.2.3 Leaflet - linked and sydata:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAbElEQVR4Xs2RQQrAMAgEfZgf7W9LAguybljJpR3wEse5JOL3ZObDb4x1loDhHbBOFU6i2Ddnw2KNiXcdAXygJlwE8OFVBHDgKrLgSInN4WMe9iXiqIVsTMjH7z/GhNTEibOxQswcYIWYOR/zAjBJfiXh3jZ6AAAAAElFTkSuQmCCnced plots
 
 ```{r Visualizing multiple datasets with leaflet: linked and synced maps}
 m1 <- leaflet() %>% 
